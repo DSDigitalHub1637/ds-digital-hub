@@ -22,7 +22,7 @@ if st.sidebar.button("🔄 Nouvelle discussion"):
     st.session_state.messages = []
     st.rerun()
 
-# Récupération de la clé API depuis les Secrets de Streamlit
+# Récupération de la clé API
 try:
     api_key = st.secrets["GEMINI_API_KEY"]
     client = genai.Client(api_key=api_key)
@@ -41,33 +41,25 @@ for message in st.session_state.messages:
 
 # Zone de saisie
 if prompt := st.chat_input("Comment puis-je vous aider ?"):
-    # Afficher le message du client
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Définition de la mission de l'IA (Ton expertise)
+    # Ta mission mise à jour avec tes nouveaux services
     mission = """
-    Tu es l'assistant IA de DS Digital Hub, une agence basée à Bobo-Dioulasso.
-    Ton rôle est de conseiller les clients sur :
-    1. L'Audiovisuel (Spots, montages).
-    2. Le Design Graphique (Logos, affiches).
-    3. Le Web & l'IA (Sites, agents IA).
-    4. Le Digital Marketing & le Community Management.
-    5. Le Streaming (Couverture d'événements).
-    6. NOUVEAU : La vente de téléphones, vêtements et tickets d'événements.
-    
-    Sois professionnel, amical, et mentionne que l'agence est à Bobo-Dioulasso. 
-    Propose toujours un service complémentaire et demande le budget estimé en FCFA.
+    Tu es Samira l'assistant IA de DS Digital Hub, une agence à Bobo-Dioulasso.
+    Services : 
+    - Audiovisuel, Design, Web/IA, Marketing, Streaming.
+    Sois pro, amical, mentionne Bobo-Dioulasso et demande le budget en FCFA.
     """
 
     # Génération de la réponse
     with st.chat_message("assistant"):
         with st.spinner("DS Digital Hub réfléchit..."):
             try:
-                # UTILISATION DU MODÈLE 1.5 FLASH (Plus stable pour le quota gratuit)
+                # SYNTAXE DU GUIDE GOOGLE (Modèle 2.0 Flash)
                 response = client.models.generate_content(
-                    model="gemini-1.5-flash-latest",
+                    model="gemini-2.0-flash",
                     contents=f"MISSION : {mission}\n\nHISTORIQUE : {st.session_state.messages}\n\nCLIENT : {prompt}"
                 )
                 
