@@ -66,10 +66,10 @@ if prompt := st.chat_input("Comment puis-je vous aider ?"):
         with st.spinner("DS Digital Hub réfléchit..."):
             try:
                 # UTILISATION DU MODÈLE GEMINI 2.0 FLASH
-                response = client.models.generate_content(
-                    model="gemini-pro",
-                    contents=f"MISSION : {mission}\n\nHISTORIQUE : {st.session_state.messages}\n\nCLIENT : {prompt}"
-                )
+               response = client.models.generate_content(
+    model="gemini-1.5-flash",
+    contents=f"MISSION : {mission}\n\nHISTORIQUE : {st.session_state.messages}\n\nCLIENT : {prompt}"
+)
                 
                 texte_reponse = response.text
                 st.markdown(texte_reponse)
