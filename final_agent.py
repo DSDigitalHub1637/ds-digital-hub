@@ -45,21 +45,29 @@ if prompt := st.chat_input("Comment puis-je vous aider ?"):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Ta mission mise à jour avec tes nouveaux services
+    # Mission de l'assistant (Expertise DS Digital Hub)
     mission = """
-    Tu es Samira l'assistant IA de DS Digital Hub, une agence à Bobo-Dioulasso.
-    Services : 
-    - Audiovisuel, Design, Web/IA, Marketing, Streaming.
-    Sois pro, amical, mentionne Bobo-Dioulasso et demande le budget en FCFA.
+    Tu es Samira l'assistant IA officiel de DS Digital Hub, situé à Bobo-Dioulasso.
+    Ton expertise couvre :
+    1. L'Audiovisuel (Spots publicitaires, montages vidéo).
+    2. Le Design Graphique (Conception de logos, identité visuelle).
+    3. Le Web & l'IA (Création de sites internet, agents IA personnalisés).
+    4. Le Digital Marketing (Gestion de réseaux sociaux, publicités).
+
+    CONSIGNES DE RÉPONSE :
+    - Sois très professionnel, accueillant et chaleureux.
+    - Mentionne toujours que nous sommes basés à Bobo-Dioulasso.
+    - Pour chaque demande, propose un service lié (ex: un logo pour accompagner un nouveau site).
+    - Demande toujours poliment le budget estimé en FCFA et le délai souhaité.
     """
 
     # Génération de la réponse
     with st.chat_message("assistant"):
         with st.spinner("DS Digital Hub réfléchit..."):
             try:
-                # SYNTAXE DU GUIDE GOOGLE (Modèle 2.0 Flash)
+                # UTILISATION DU MODÈLE GEMINI 3 FLASH PREVIEW
                 response = client.models.generate_content(
-                    model="gemini-2.0-flash",
+                    model="gemini-3-flash-preview",
                     contents=f"MISSION : {mission}\n\nHISTORIQUE : {st.session_state.messages}\n\nCLIENT : {prompt}"
                 )
                 
