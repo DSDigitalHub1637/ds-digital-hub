@@ -67,7 +67,7 @@ if prompt := st.chat_input("Comment puis-je vous aider ?"):
             try:
                 # UTILISATION DU MODÈLE 1.5 FLASH (Plus stable pour le quota gratuit)
                 response = client.models.generate_content(
-                    model="gemini-1.5-flash",
+                    model="gemini-1.5-flash-latest",
                     contents=f"MISSION : {mission}\n\nHISTORIQUE : {st.session_state.messages}\n\nCLIENT : {prompt}"
                 )
                 
