@@ -8,49 +8,25 @@ st.set_page_config(page_title="DS Digital Hub - Expert IA", page_icon="🤖", la
 # --- STYLE CSS AVANCÉ ---
 st.markdown("""
     <style>
-    /* Fond de page et police */
-    .stApp {
-        background-color: #f0f2f6;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    /* Header avec dégradé */
+    .stApp { background-color: #f0f2f6; font-family: 'Segoe UI', sans-serif; }
     .header-container {
         background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
-        padding: 20px;
-        border-radius: 15px;
-        color: white;
-        text-align: center;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        padding: 20px; border-radius: 15px; color: white; text-align: center;
+        margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-
-    /* Style des bulles de chat */
     .stChatMessage {
-        background-color: white !important;
-        border-radius: 20px !important;
-        padding: 15px !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        background-color: white !important; border-radius: 20px !important;
+        padding: 15px !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
         margin-bottom: 15px !important;
     }
-
-    /* Personnalisation de la barre latérale */
-    section[data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #e0e0e0;
-    }
-    
-    /* Bouton de discussion */
     .stButton>button {
-        border-radius: 10px;
-        width: 100%;
-        background-color: #1e3a8a;
-        color: white;
+        border-radius: 10px; width: 100%;
+        background-color: #28a745; color: white; font-weight: bold;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# Affichage du Header
+# Header
 st.markdown("""
     <div class="header-container">
         <h1>DS DIGITAL HUB</h1>
@@ -62,20 +38,18 @@ st.markdown("""
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/4712/4712035.png", width=120)
     st.title("Menu Agency")
-    st.info("Expertise : Audiovisuel, Design, Web & Ventes.")
     if st.button("🔄 Nouvelle session"):
         st.session_state.messages = []
         st.rerun()
 
-# Récupération de la clé API
+# Clé API
 try:
     api_key = st.secrets["GEMINI_API_KEY"]
     client = genai.Client(api_key=api_key)
 except Exception:
-    st.error("Erreur de configuration.")
+    st.error("Erreur de configuration API.")
     st.stop()
 
-# Initialisation/Affichage historique
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -89,10 +63,16 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
     with st.chat_message("user"):
         st.markdown(prompt)
 
+    # MISSION AVEC INSTRUCTIONS DE PAIEMENT
     mission = """
     Tu es Samira l'assistant de DS Digital Hub à Bobo-Dioulasso. 
-    Services : Audiovisuel, Design Graphique, Web/IA, Marketing,.
-    Ton ton est pro, chaleureux et expert. Propose des solutions concrètes et demande le budget en FCFA.
+    Services : Audiovisuel, Design Graphique, Web/IA, Marketing Digital (Création et gestion de page sur les réseaux sociaux).
+    
+    PROCÉDURE DE PAIEMENT :
+    - Si un client veut commander, demande un acompte de 50%.
+    - Pour le paiement, indique EXCLUSIVEMENT ce numéro : +226 67 37 77 08 (Orange Money et Wave).
+    - Précise que le nom sur le compte est 'Oudou SANOU' (ou le nom associé au numéro).
+    - Une fois le transfert fait, demande-lui de cliquer sur le bouton 'Confirmer mon paiement' qui apparaîtra sous la discussion.
     """
 
     with st.chat_message("assistant"):
@@ -102,11 +82,20 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
                     model="gemini-3-flash-preview",
                     contents=f"MISSION : {mission}\n\nHISTORIQUE : {st.session_state.messages}\n\nCLIENT : {prompt}"
                 )
-                st.markdown(response.text)
-                st.session_state.messages.append({"role": "assistant", "content": response.text})
-            except Exception as e:
-                st.error("Une petite erreur technique, réessayez dans un instant.")
+                texte = response.text
+                st.markdown(texte)
+                st.session_state.messages.append({"role": "assistant", "content": texte})
+            except Exception:
+                st.error("Erreur technique, réessayez.")
 
-# Pied de page
+# --- SECTION NOTIFICATION RESPONSABLE ---
 st.markdown("---")
-st.caption("© 2026 DS Digital Hub | Design & Intelligence Artificielle")
+if st.button("✅ CONFIRMER MON PAIEMENT (ACOMPTE)"):
+    # Ici, on simule l'envoi au responsable
+    st.balloons()
+    st.success("Notification envoyée au Responsable de Production ! Le travail va commencer dès vérification du transfert au +226 67 37 77 08.")
+    
+    # Message interne (pour les logs Streamlit en attendant l'Email/WhatsApp automatique)
+    print(f"ALERTE PRODUCTION : Un client a confirmé un paiement pour le compte 67377708.")
+
+st.caption("© 2026 DS Digital Hub | Bobo-Dioulasso")
