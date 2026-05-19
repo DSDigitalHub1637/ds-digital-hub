@@ -55,17 +55,22 @@ except Exception:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# --- RÉAFFICHAGE DE L'HISTORIQUE ---
 for message in st.session_state.messages:
-    with st.chat_message("assistant", avatar=logo_path):
-        st.write(message["content"])
+    if message["role"] == "user":
+        with st.chat_message("user"):
+            st.write(message["content"])
+    else:
+        with st.chat_message("assistant", avatar=logo_path):
+            st.write(message["content"])
 
-# Zone de saisie
+# --- ZONE DE SAISIE ---
 if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-   # MISSION DE SAMIRA - EXPERTE DS DIGITAL HUB
+    # MISSION DE SAMIRA - EXPERTE DS DIGITAL HUB
     mission = """
     Ton nom est Samira, l'assistante intelligente de DS Digital Hub à Bobo-Dioulasso. 
     Tu es une experte en stratégie.
@@ -96,7 +101,8 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
     [ÉTAPE 4] : PAIEMENT
     Donne les infos : Acompte 50%, Orange Money/Wave au +226 67 37 77 08 (Oudou SANOU).
     """
-   with st.chat_message("assistant", avatar=logo_path):
+
+    with st.chat_message("assistant", avatar=logo_path):
         with st.spinner("Analyse de votre demande..."):
             try:
                 response = client.models.generate_content(
@@ -112,11 +118,8 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
 # --- SECTION NOTIFICATION RESPONSABLE ---
 st.markdown("---")
 if st.button("✅ CONFIRMER MON PAIEMENT (ACOMPTE)"):
-    # Ici, on simule l'envoi au responsable
     st.balloons()
     st.success("Notification envoyée au Responsable de Production ! Le travail va commencer dès vérification du transfert au +226 67 37 77 08.")
-    
-    # Message interne (pour les logs Streamlit en attendant l'Email/WhatsApp automatique)
     print(f"ALERTE PRODUCTION : Un client a confirmé un paiement pour le compte 67377708.")
 
 st.caption("© 2026 DS Digital Hub | Bobo-Dioulasso")
