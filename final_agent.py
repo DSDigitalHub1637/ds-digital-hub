@@ -18,11 +18,14 @@ def notifier_n8n(texte_samira, client_prompt):
         "message": texte_samira,
         "question_client": client_prompt
     }
+    # Cet en-tête permet de sauter la page d'avertissement ngrok automatiquement
+    headers = {
+        "ngrok-skip-browser-warning": "true"
+    }
     try:
-        # Envoi de la requête avec un timeout de 4 secondes pour ne pas ralentir l'utilisateur
-        requests.post(N8N_WEBHOOK_URL, json=payload, timeout=4)
+        # Envoi de la requête avec l'en-tête inclus
+        requests.post(N8N_WEBHOOK_URL, json=payload, headers=headers, timeout=4)
     except Exception:
-        # Erreur ignorée en silence pour que l'expérience client reste fluide sur le site
         pass
 
 # --- STYLE CSS AVANCÉ ---
