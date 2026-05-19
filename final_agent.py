@@ -55,7 +55,7 @@ if "messages" not in st.session_state:
 
 for message in st.session_state.messages:
     with st.chat_message("assistant", avatar="logo_ds.png"):
-    st.write(message["content"])
+        st.write(message["content"])
 
 # Zone de saisie
 if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
