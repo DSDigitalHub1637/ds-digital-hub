@@ -54,8 +54,8 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+    with st.chat_message("assistant", avatar="logo_ds.png"):
+    st.write(message["content"])
 
 # Zone de saisie
 if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
@@ -94,7 +94,7 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
     [ÉTAPE 4] : PAIEMENT
     Donne les infos : Acompte 50%, Orange Money/Wave au +226 67 37 77 08 (Oudou SANOU).
     """
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar="logo_ds.png"):
         with st.spinner("Analyse de votre demande..."):
             try:
                 response = client.models.generate_content(
