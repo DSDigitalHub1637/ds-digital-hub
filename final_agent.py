@@ -1,11 +1,29 @@
 import streamlit as st
 from google import genai
 import os
+import requests  # Ajout de la bibliothèque réseau pour communiquer avec n8n
 
 # Configuration de la page
 st.set_page_config(page_title="DS Digital Hub - Expert IA", page_icon="🤖", layout="centered")
 current_dir = os.path.dirname(os.path.abspath(__file__))
 logo_path = os.path.join(current_dir, "logo_ds.png")
+
+# Configuration du tunnel n8n (Ton adresse localtunnel active)
+N8N_WEBHOOK_URL = "https://shaky-sites-unite.loca.lt/webhook-test/samira-whatsapp"
+
+def notifier_n8n(texte_samira, client_prompt):
+    """Envoie discrètement la réponse de Samira vers ton serveur n8n local."""
+    payload = {
+        "agent": "Samira",
+        "message": texte_samira,
+        "question_client": client_prompt
+    }
+    try:
+        # Envoi de la requête avec un timeout de 4 secondes pour ne pas ralentir l'utilisateur
+        requests.post(N8N_WEBHOOK_URL, json=payload, timeout=4)
+    except Exception:
+        # Erreur ignorée en silence pour que l'expérience client reste fluide sur le site
+        pass
 
 # --- STYLE CSS AVANCÉ ---
 st.markdown("""
@@ -86,7 +104,7 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
        ✅ L'Audiovisuel (Spots & Montage)
        ✅ Le Design Graphique (Logos & Visuels)
        ✅ Le Web & l'IA (Sites & Agents intelligents)
-       ✅ Le Marketing Digital & les Ventes (Téléphones, Mode, Billetterie).
+       ✅ Le Marketing Digital.
        
        Pour mieux vous orienter, dans quel secteur d'activité évoluez-vous ?"
     
@@ -112,6 +130,10 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
                 texte = response.text
                 st.markdown(texte)
                 st.session_state.messages.append({"role": "assistant", "content": texte})
+                
+                # Éclaire le Webhook n8n avec la réponse de Samira et la question du client
+                notifier_n8n(texte, prompt)
+                
             except Exception:
                 st.error("Erreur technique, réessayez.")
 
