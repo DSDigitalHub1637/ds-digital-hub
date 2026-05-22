@@ -27,26 +27,20 @@ def notifier_n8n(texte_samira, client_prompt):
     except Exception:
         pass
 
-# --- INTERFACE EN MODE SOMBRE INTERACTIF ---
+# --- STYLE CSS AVANCÉ ADAPTATIF (LIGHT & DARK AUTOMATIQUE) ---
 st.markdown("""
     <style>
-    /* Fond global de l'application */
+    /* On utilise les variables dynamiques de Streamlit pour le fond global et les textes */
     .stApp { 
-        background-color: #121214 !important; 
-        color: #E2E8F0 !important;
         font-family: 'Segoe UI', sans-serif; 
     }
     
-    /* Barre latérale (Sidebar) en mode sombre */
+    /* Barre latérale (Sidebar) - S'adapte dynamiquement */
     [data-testid="stSidebar"] {
-        background-color: #1A1A1E !important;
-        border-right: 1px solid #2D2D34;
-    }
-    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p {
-        color: #E2E8F0 !important;
+        border-right: 1px solid rgba(128, 128, 128, 0.2);
     }
 
-    /* En-tête (Header Container) */
+    /* En-tête (Header Container) - Reste toujours aux couleurs de DS Digital Hub */
     .header-container {
         background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
         padding: 25px; 
@@ -54,31 +48,22 @@ st.markdown("""
         color: white !important; 
         text-align: center;
         margin-bottom: 25px; 
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     }
     .header-container h1 { color: white !important; margin: 0; }
     .header-container p { color: #bfdbfe !important; margin-top: 5px; }
 
-    /* Bulles de messages de Chat */
+    /* Bulles de messages de Chat - Héritent du fond natif pour éviter les conflits */
     .stChatMessage {
-        background-color: #1A1A1E !important; 
-        border: 1px solid #2D2D34 !important;
+        background-color: var(--background-color) !important;
+        border: 1px solid rgba(128, 128, 128, 0.2) !important;
         border-radius: 15px !important;
         padding: 15px !important; 
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
         margin-bottom: 15px !important;
     }
-    .stChatMessage p { color: #E2E8F0 !important; }
 
-    /* Zone de saisie (Chat Input) tout en bas */
-    .stChatInput textarea {
-        background-color: #222226 !important;
-        color: #ffffff !important;
-        border: 1px solid #3A3A40 !important;
-        border-radius: 10px !important;
-    }
-
-    /* Personnalisation des boutons */
+    /* Bouton vert de paiement */
     .stButton>button {
         border-radius: 10px; 
         width: 100%;
@@ -93,8 +78,8 @@ st.markdown("""
         background-color: #1e7e34 !important;
     }
 
-    /* Ligne de séparation */
-    hr { border-color: #2D2D34 !important; }
+    /* Ligne de séparation discrète */
+    hr { border-color: rgba(128, 128, 128, 0.2) !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -153,7 +138,7 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
     - Ne pas afficher l'étape au début : "--- Étape X ---".
 
     [ÉTAPE 1] : ACCUEIL ET DÉCOUVERTE
-    1. Si l'historique est vide ou ne contient que la salutation initiale, réponds ceci : 
+    1. Si l'historique ne contient que le message actuel de l'utilisateur ou est très court, réponds ceci : 
        "Bienvenue chez DS Digital Hub ! Je suis Samira. Nous excellons dans :
        ✅ L'Audiovisuel (Spots & Montage)
        ✅ Le Design Graphique (Logos & Visuels)
