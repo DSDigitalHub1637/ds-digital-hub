@@ -19,30 +19,18 @@ def interroger_n8n(texte_samira, client_prompt):
         "question_client": client_prompt
     }
     try:
+                # ... ton code de génération Gemini ici ...
                 response = client.models.generate_content(...)
                 texte_genere = response.text
                 
-                # NOUVEAU : On tente la communication avec un vrai débogage
-                payload = {"agent": "Samira", "message": texte_genere, "question_client": prompt}
-                url = "https://primary-production-b36e9.up.railway.app/webhook/samira-whatsapp"
-                
-                # Envoi avec timeout court pour ne pas bloquer
-                r = requests.post(url, json=payload, timeout=5)
-                
-                if r.status_code == 200:
-                    texte_final = r.json().get("output", texte_genere)
-                else:
-                    # Ici, on affiche le VRAI code d'erreur au lieu de "Erreur technique"
-                    st.error(f"Erreur n8n ({r.status_code}) : {r.text}")
-                    texte_final = texte_genere
+                # ... appel de la fonction ...
+                texte_final = interroger_n8n(texte_genere, prompt)
                 
                 st.markdown(texte_final)
                 st.session_state.messages.append({"role": "assistant", "content": texte_final})
                 
             except Exception as e:
-                # Ici, on affiche l'erreur Python réelle si le code plante
                 st.error(f"Erreur Python : {str(e)}")
-
 # --- STYLE CSS ---
 st.markdown("""
     <style>
