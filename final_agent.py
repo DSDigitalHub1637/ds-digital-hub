@@ -9,8 +9,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 logo_path = os.path.join(current_dir, "logo_ds.png")
 
 # Configuration du webhook n8n (URL de production)
-N8N_WEBHOOK_URL = "https://primary-production-b36e9.up.railway.app/webhook/samira-whatsapp"
-
+N8N_WEBHOOK_URL = https://primary-production-b36e9.up.railway.app/webhook/samira-whatsapp
 def interroger_n8n(texte_samira, client_prompt):
     """Envoie la réponse à n8n et attend la réponse validée en JSON."""
     payload = {
