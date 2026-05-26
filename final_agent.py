@@ -3,7 +3,12 @@ from google import genai
 import os
 import requests
 
-# 1. Correction : Ajout des guillemets autour de l'URL (SyntaxError fixée)
+# --- CONFIGURATION ---
+st.set_page_config(page_title="DS Digital Hub - Expert IA", page_icon="🤖", layout="centered")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+logo_path = os.path.join(current_dir, "logo_ds.png")
+
+# URL corrigée (avec guillemets)
 N8N_WEBHOOK_URL = "https://primary-production-b36e9.up.railway.app/webhook/samira-whatsapp"
 
 def interroger_n8n(texte_samira, client_prompt):
@@ -16,22 +21,51 @@ def interroger_n8n(texte_samira, client_prompt):
     except Exception:
         return texte_samira
 
-# ... (reste de ton code inchangé) ...
+# --- DESIGN CSS ---
+st.markdown("""
+    <style>
+    .header-container { background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%); padding: 25px; border-radius: 15px; color: white !important; text-align: center; margin-bottom: 25px; }
+    .stChatMessage { border-radius: 15px !important; margin-bottom: 15px !important; }
+    .stButton>button { background-color: #218838 !important; color: white !important; font-weight: bold; border-radius: 10px; width: 100%; }
+    </style>
+    """, unsafe_allow_html=True)
+
+st.markdown('<div class="header-container"><h1>DS DIGITAL HUB</h1><p>L\'excellence numérique à Bobo-Dioulasso</p></div>', unsafe_allow_html=True)
+
+# --- LOGIQUE ---
+with st.sidebar:
+    st.title("Menu Agency")
+    if st.button("🔄 Nouvelle session"):
+        st.session_state.messages = []
+        st.rerun()
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
+
+if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
     with st.chat_message("assistant"):
         with st.spinner("Analyse de votre demande..."):
             try:
-                # Ton code de génération Gemini
+                # Initialisation Client Gemini
+                api_key = st.secrets["GEMINI_API_KEY"]
+                client = genai.Client(api_key=api_key)
+                
                 response = client.models.generate_content(
                     model="gemini-3-flash-preview",
-                    contents=f"MISSION: {mission}\n\nHISTORIQUE: {st.session_state.messages}\n\nCLIENT: {prompt}"
+                    contents=f"Ton nom est Samira, experte chez DS Digital Hub. Réponds à : {prompt}"
                 )
-                texte_genere = response.text
-                texte_final = interroger_n8n(texte_genere, prompt)
                 
+                texte_final = interroger_n8n(response.text, prompt)
                 st.markdown(texte_final)
                 st.session_state.messages.append({"role": "assistant", "content": texte_final})
-            
-            # 2. Correction : L'alignement du 'except' (IndentationError fixée)
+                
             except Exception as e:
-                st.error(f"Erreur Python : {str(e)}")
+                st.error(f"Erreur technique : {str(e)}")
