@@ -19,15 +19,29 @@ def interroger_n8n(texte_samira, client_prompt):
         "question_client": client_prompt
     }
     try:
-        # Timeout de 10s pour laisser le temps à n8n/IA de traiter
-        response = requests.post(N8N_WEBHOOK_URL, json=payload, timeout=10)
-        if response.status_code == 200:
-            data = response.json()
-            # On retourne la valeur contenue dans 'output' ou le texte original par défaut
-            return data.get("output", texte_samira)
-        return texte_samira
-    except Exception:
-        return texte_samira
+                response = client.models.generate_content(...)
+                texte_genere = response.text
+                
+                # NOUVEAU : On tente la communication avec un vrai débogage
+                payload = {"agent": "Samira", "message": texte_genere, "question_client": prompt}
+                url = "https://primary-production-b36e9.up.railway.app/webhook/samira-whatsapp"
+                
+                # Envoi avec timeout court pour ne pas bloquer
+                r = requests.post(url, json=payload, timeout=5)
+                
+                if r.status_code == 200:
+                    texte_final = r.json().get("output", texte_genere)
+                else:
+                    # Ici, on affiche le VRAI code d'erreur au lieu de "Erreur technique"
+                    st.error(f"Erreur n8n ({r.status_code}) : {r.text}")
+                    texte_final = texte_genere
+                
+                st.markdown(texte_final)
+                st.session_state.messages.append({"role": "assistant", "content": texte_final})
+                
+            except Exception as e:
+                # Ici, on affiche l'erreur Python réelle si le code plante
+                st.error(f"Erreur Python : {str(e)}")
 
 # --- STYLE CSS ---
 st.markdown("""
