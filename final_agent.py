@@ -32,7 +32,7 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
             # Appel direct au modèle
             client = genai.Client(api_key=api_key)
             response = client.models.generate_content(
-                model="gemini-1.5-flash",
+                model="gemini-1.5-pro",
                 contents=f"Tu es Samira, une assistante experte de DS Digital Hub. Réponds à : {prompt}"
             )
             
