@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 import os
+# L'URL est stockée dans les secrets de votre déploiement (sur Railway ou autre)
+N8N_WEBHOOK_URL = os.getenv("N8N_WEBHOOK_URL")
 
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(page_title="DS Digital Hub | Expert IA", page_icon="🤖", layout="centered")
