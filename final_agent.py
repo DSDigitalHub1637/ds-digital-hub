@@ -15,9 +15,9 @@ def interroger_n8n(texte_samira, client_prompt):
         if response.status_code == 200:
             return response.json().get("output", texte_samira)
         return texte_samira
-    except:
-        return texte_samira
-
+    except Exception as e:
+            # Cela affichera l'erreur réelle à l'écran pour qu'on sache ce qui cloche
+            st.error(f"Erreur technique : {str(e)}")
 # --- UI & DESIGN ---
 st.markdown("""
     <style>
