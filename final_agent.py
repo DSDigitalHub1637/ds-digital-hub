@@ -1,33 +1,16 @@
 import streamlit as st
-from google import genai
-import os
 import requests
+import os
 
-# Configuration de la page
-st.set_page_config(page_title="DS Digital Hub - Expert IA", page_icon="🤖", layout="centered")
-current_dir = os.path.dirname(os.path.abspath(__file__))
-logo_path = os.path.join(current_dir, "logo_ds.png")
+# --- CONFIGURATION DE LA PAGE ---
+st.set_page_config(page_title="DS Digital Hub | Expert IA", page_icon="🤖", layout="centered")
 
-# Configuration du tunnel n8n
+# URL de ton webhook n8n
 N8N_WEBHOOK_URL = "https://daoudasanou-ds-n8n-hub.hf.space/webhook-test/samira-whatsapp"
 
-def notifier_n8n(texte_samira, client_prompt):
-    """Envoie discrètement la réponse de Samira vers ton serveur n8n."""
-    payload = {
-        "agent": "Samira",
-        "message": texte_samira,
-        "question_client": client_prompt
-    }
-    headers = {"ngrok-skip-browser-warning": "true"}
-    try:
-        requests.post(N8N_WEBHOOK_URL, json=payload, headers=headers, timeout=4)
-    except Exception:
-        pass
-
-# --- STYLE CSS ---
+# --- STYLE CSS AVANCÉ ---
 st.markdown("""
     <style>
-    .stApp { font-family: 'Segoe UI', sans-serif; }
     .header-container {
         background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
         padding: 25px; 
@@ -40,11 +23,8 @@ st.markdown("""
     .header-container h1 { color: white !important; margin: 0; }
     .header-container p { color: #bfdbfe !important; margin-top: 5px; }
     .stChatMessage {
-        background-color: var(--background-color) !important;
-        border: 1px solid rgba(128, 128, 128, 0.2) !important;
         border-radius: 15px !important;
         padding: 15px !important; 
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
         margin-bottom: 15px !important;
     }
     .stButton>button {
@@ -59,6 +39,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+# --- HEADER & SIDEBAR ---
 st.markdown("""<div class="header-container"><h1>DS DIGITAL HUB</h1><p>L'excellence numérique à Bobo-Dioulasso</p></div>""", unsafe_allow_html=True)
 
 with st.sidebar:
@@ -68,50 +49,39 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
-try:
-    api_key = st.secrets["GEMINI_API_KEY"]
-    client = genai.Client(api_key=api_key)
-except Exception:
-    st.error("Erreur de configuration API.")
-    st.stop()
-
+# --- INITIALISATION MÉMOIRE LOCALE (Affichage) ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+# --- AFFICHAGE DE LA CONVERSATION ---
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
 
+# --- GESTION DU MESSAGE CLIENT (Logique n8n) ---
 if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
+    # 1. Ajout et affichage immédiat
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    mission = """
-    Ton nom est Samira, l'assistante intelligente de DS Digital Hub à Bobo-Dioulasso. 
-    Tu es une experte en stratégie.
-    RÈGLE D'OR : 
-    - Lors du TOUT PREMIER message, présente l'agence : Audiovisuel, Design, Web/IA, Marketing.
-    - Pose UNE SEULE QUESTION à la fois.
-    - Ne pas afficher d'étapes (ex: 'Étape 1').
-    - Ne demande pas le budget en premier.
-    """
+    # 2. Appel au "Cerveau" n8n
+    with st.spinner("Samira réfléchit..."):
+        try:
+            # On envoie le message au webhook n8n qui gère la mémoire Postgres
+            response = requests.post(N8N_WEBHOOK_URL, json={"message": prompt}, timeout=20)
+            data = response.json()
+            
+            # Récupération de la réponse renvoyée par le nœud "Respond to Webhook"
+            texte_reponse = data.get("reponse", "Désolé, une erreur de communication est survenue.")
+            
+            # 3. Ajout et affichage de la réponse
+            st.session_state.messages.append({"role": "assistant", "content": texte_reponse})
+            st.rerun()
+        except Exception as e:
+            st.error(f"Erreur de connexion avec le Hub : {e}")
 
-    with st.chat_message("assistant", avatar=logo_path):
-        with st.spinner("Analyse de votre demande..."):
-            try:
-                # Utilisation du modèle valide
-                response = client.models.generate_content(
-                    model="gemini-3.5-flash", 
-                    contents=f"MISSION : {mission}\n\nHISTORIQUE : {st.session_state.messages}\n\nCLIENT : {prompt}"
-                )
-                texte = response.text
-                st.markdown(texte)
-                st.session_state.messages.append({"role": "assistant", "content": texte})
-                notifier_n8n(texte, prompt)
-            except Exception as e:
-                st.error(f"Erreur technique : {e}")
-
+# --- PIED DE PAGE & PAIEMENT ---
 st.markdown("---")
 if st.button("✅ CONFIRMER MON PAIEMENT (ACOMPTE)"):
     st.balloons()
