@@ -24,31 +24,27 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
 
     with st.chat_message("assistant"):
         try:
-            # 1. Vérification de la clé API
             api_key = st.secrets.get("GEMINI_API_KEY")
             if not api_key:
-                st.error("Erreur : La clé API 'GEMINI_API_KEY' n'est pas configurée dans les secrets.")
+                st.error("Erreur : Clé API manquante dans les secrets.")
                 st.stop()
 
-            # 2. Initialisation du client
+            # Appel direct au modèle
             client = genai.Client(api_key=api_key)
-            
-            # 3. Appel au modèle corrigé
             response = client.models.generate_content(
-                model="gemini-1.5-flash-latest", # <--- MODIFICATION ICI
+                model="gemini-1.5-flash",
                 contents=f"Tu es Samira, une assistante experte de DS Digital Hub. Réponds à : {prompt}"
             )
             
             texte_ia = response.text
             
-            # 4. Envoi à n8n
+            # Envoi à n8n
             payload = {"agent": "Samira", "message": texte_ia, "question_client": prompt}
-            n8n_resp = requests.post(N8N_WEBHOOK_URL, json=payload, timeout=10)
+            requests.post(N8N_WEBHOOK_URL, json=payload, timeout=10)
             
-            # Résultat final
+            # Affichage
             st.markdown(texte_ia)
             st.session_state.messages.append({"role": "assistant", "content": texte_ia})
             
         except Exception as e:
-            # Cette ligne affichera l'erreur précise (429, 403, etc.) au lieu d'un message générique
             st.error(f"Erreur technique détaillée : {str(e)}")
