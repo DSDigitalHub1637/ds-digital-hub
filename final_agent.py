@@ -9,7 +9,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 logo_path = os.path.join(current_dir, "logo_ds.png")
 
 # Configuration du tunnel n8n
-N8N_WEBHOOK_URL = https://primary-production-b36e9.up.railway.app/webhook-test/samira-whatsapp
+N8N_WEBHOOK_URL =https://primary-production-b36e9.up.railway.app/webhook-test/samira-whatsapp
 
 def notifier_n8n(texte_samira, client_prompt):
     """Envoie discrètement la réponse de Samira vers ton serveur n8n."""
