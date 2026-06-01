@@ -6,7 +6,7 @@ import os
 st.set_page_config(page_title="DS Digital Hub | Expert IA", page_icon="🤖", layout="centered")
 
 # URL de ton webhook n8n
-N8N_WEBHOOK_URL = https://primary-production-b36e9.up.railway.app/webhook-test/samira-whatsapp
+N8N_WEBHOOK_URL = "https://primary-production-b36e9.up.railway.app/webhook-test/samira-whatsapp"
 
 # --- STYLE CSS AVANCÉ ---
 st.markdown("""
