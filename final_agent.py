@@ -29,10 +29,10 @@ if prompt := st.chat_input("Comment DS Digital Hub peut vous aider ?"):
                 st.error("Erreur : Clé API manquante dans les secrets.")
                 st.stop()
 
-            # Appel direct au modèle
+            # Appel direct au modèle avec le nom correct
             client = genai.Client(api_key=api_key)
             response = client.models.generate_content(
-                model="gemini-1.5-pro",
+                model="gemini-3.5-flash",  # Mise à jour vers le modèle recommandé
                 contents=f"Tu es Samira, une assistante experte de DS Digital Hub. Réponds à : {prompt}"
             )
             
